@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Escalas</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <h1>Gestão de Escalas</h1>
+        <div id="ultimoBackup"></div>
+        <nav>
+            <ul>
+                <li><a href="#" onclick="showSection('cadastrarMembros')">Cadastrar Membros</a></li>
+                <li><a href="#" onclick="showSection('cadastrarRestricoesDiasSemana')">Cadastrar Restrições (Dias da
+                        Semana)</a></li>
+                <li><a href="#" onclick="showSection('cadastrarRestricoesDatas')">Cadastrar Restrições (Datas
+                        Específicas)</a></li>
+                <li><a href="#" onclick="showSection('gerarEscala')">Gerar Escala</a></li>
+                <li><a href="#" onclick="showSection('importarExportar')">Importar/Exportar Dados</a></li>
+            </ul>
+        </nav>
+
+        <section id="cadastrarMembros" class="hidden">
+            <h2>Cadastrar Membros</h2>
+            <form id="membrosForm">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" required>
+                <label for="sexo">Sexo:</label>
+                <select id="sexo" name="sexo" required>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
+                </select>
+                <label for="ministerios">Outros Ministérios:</label>
+                <input type="text" id="ministerios" name="ministerios">
+                <button type="submit">Adicionar Membro</button>
+            </form>
+            <div id="membrosList"></div>
+        </section>
+
+        <section id="cadastrarRestricoesDiasSemana" class="hidden">
+            <h2>Cadastrar Restrições (Dias da Semana)</h2>
+            <form id="restricoesDiasSemanaForm">
+                <label for="membroDiasSemana">Membro:</label>
+                <select id="membroDiasSemana" name="membro" required></select>
+                <fieldset>
+                    <legend>Restrições por Dia da Semana:</legend>
+                    <label><input type="checkbox" name="restricoesDiasSemana" value="segunda"> Segunda-feira</label>
+                    <label><input type="checkbox" name="restricoesDiasSemana" value="terca"> Terça-feira</label>
+                    <label><input type="checkbox" name="restricoesDiasSemana" value="quarta"> Quarta-feira</label>
+                    <label><input type="checkbox" name="restricoesDiasSemana" value="quinta"> Quinta-feira</label>
+                    <label><input type="checkbox" name="restricoesDiasSemana" value="sexta"> Sexta-feira</label>
+                    <label><input type="checkbox" name="restricoesDiasSemana" value="sabado"> Sábado</label>
+                    <label><input type="checkbox" name="restricoesDiasSemana" value="domingoManha"> Domingo
+                        (Manhã)</label>
+                    <label><input type="checkbox" name="restricoesDiasSemana" value="domingoNoite"> Domingo
+                        (Noite)</label>
+                </fieldset>
+                <button type="submit">Adicionar Restrição</button>
+            </form>
+            <div id="restricoesDiasSemanaList"></div>
+        </section>
+
+        <section id="cadastrarRestricoesDatas" class="hidden">
+            <h2>Cadastrar Restrições (Datas Específicas)</h2>
+            <form id="restricoesDatasForm">
+                <label for="mesAno">Mês e Ano (MM/AAAA):</label>
+                <input type="text" id="mesAno" name="mesAno" required>
+                <label for="membroDatas">Membro:</label>
+                <select id="membroDatas" name="membro" required></select>
+                <label for="datasRestritas">Restrições por Data (DD/MM/AAAA, separadas por vírgula, ou DD/MM/AAAA - DD/MM/AAAA para intervalos):</label>
+                <input type="text" id="datasRestritas" name="datasRestritas">
+                <button type="submit">Adicionar Restrição</button>
+            </form>
+            <div id="restricoesDatasList"></div>
+        </section>
+
+        <section id="gerarEscala" class="hidden">
+            <h2>Gerar Escala</h2>
+            <form id="gerarEscalaForm">
+                <label for="mesAnoEscala">Mês e Ano (MM/AAAA):</label>
+                <input type="text" id="mesAnoEscala" name="mesAno" required>
+
+                <div id="criteriosPainel1">
+                    <h3>Critérios - Painel 1</h3>
+                    <fieldset>
+                        <legend>Selecionar Dias da Semana (Painel 1):</legend>
+                        <label><input type="checkbox" name="diasSemanaEscala1" value="segunda"> Segunda-feira</label>
+                        <label><input type="checkbox" name="diasSemanaEscala1" value="terca"> Terça-feira</label>
+                        <label><input type="checkbox" name="diasSemanaEscala1" value="quarta"> Quarta-feira</label>
+                        <label><input type="checkbox" name="diasSemanaEscala1" value="quinta"> Quinta-feira</label>
+                        <label><input type="checkbox" name="diasSemanaEscala1" value="sexta"> Sexta-feira</label>
+                        <label><input type="checkbox" name="diasSemanaEscala1" value="sabado"> Sábado</label>
+                        <label><input type="checkbox" name="diasSemanaEscala1" value="domingoManha"> Domingo
+                            (Manhã)</label>
+                        <label><input type="checkbox" name="diasSemanaEscala1" value="domingoNoite"> Domingo
+                            (Noite)</label>
+                    </fieldset>
+                    <label for="usarMesmoSexo1">Usar membros do mesmo sexo num dia? (Painel 1)</label>
+                    <select id="usarMesmoSexo1" name="usarMesmoSexo1">
+                        <option value="nao">Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                    <label for="membrosPorDia1">Membros por dia (Painel 1):</label>
+                    <input type="number" id="membrosPorDia1" name="membrosPorDia1" value="2" min="1">
+                </div>
+
+                <div id="criteriosPainel2">
+                    <h3>Critérios - Painel 2</h3>
+                    <fieldset>
+                        <legend>Selecionar Dias da Semana (Painel 2):</legend>
+                        <label><input type="checkbox" name="diasSemanaEscala2" value="segunda"> Segunda-feira</label>
+                        <label><input type="checkbox" name="diasSemanaEscala2" value="terca"> Terça-feira</label>
+                        <label><input type="checkbox" name="diasSemanaEscala2" value="quarta"> Quarta-feira</label>
+                        <label><input type="checkbox" name="diasSemanaEscala2" value="quinta"> Quinta-feira</label>
+                        <label><input type="checkbox" name="diasSemanaEscala2" value="sexta"> Sexta-feira</label>
+                        <label><input type="checkbox" name="diasSemanaEscala2" value="sabado"> Sábado</label>
+                        <label><input type="checkbox" name="diasSemanaEscala2" value="domingoManha"> Domingo
+                            (Manhã)</label>
+                        <label><input type="checkbox" name="diasSemanaEscala2" value="domingoNoite"> Domingo
+                            (Noite)</label>
+                    </fieldset>
+                    <label for="usarMesmoSexo2">Usar membros do mesmo sexo num dia? (Painel 2)</label>
+                    <select id="usarMesmoSexo2" name="usarMesmoSexo2">
+                        <option value="nao">Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                    <label for="membrosPorDia2">Membros por dia (Painel 2):</label>
+                    <input type="number" id="membrosPorDia2" name="membrosPorDia2" value="2" min="1">
+                </div>
+
+                <button type="submit">Gerar Escala</button>
+            </form>
+            <div id="escalaContainer"></div>
+            <button id="exportarXLSX" onclick="exportarParaExcel()">Exportar para Excel</button>
+        </section>
+
+        <section id="importarExportar" class="hidden">
+            <h2>Importar/Exportar Dados</h2>
+            <button onclick="exportarDados()">Exportar Dados</button>
+            <input type="file" id="importarArquivo" accept=".json">
+            <button onclick="importarDados()">Importar Dados</button>
+            <button onclick="limparDados()">Limpar Dados</button>
+        </section>
+        <footer>
+            <p>Bem-vindo ao <b>Gestão de Escalas</b>! Esta ferramenta foi criada para simplificar a organização e distribuição de escalas em equipes com regras de disponibilidade relativamente simples. Aqui, você pode cadastrar os membros, definir dias ou períodos em que não podem trabalhar e gerar escalas automaticamente. O sistema é ideal para grupos que precisam de uma solução rápida e prática, mas pode não ser adequado para cenários com regras muito complexas ou restrições altamente personalizadas. Nosso objetivo é poupar seu tempo e garantir uma distribuição justa, facilitando a gestão das suas escalas!</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
